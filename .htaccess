@@ -1,0 +1,8 @@
+Options +FollowSymLinks
+RewriteEngine on
+RewriteBase /interviews/code-tests/mojo-facebook-api/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?/$1 [L]
+
+ErrorDocument 404 /index.php

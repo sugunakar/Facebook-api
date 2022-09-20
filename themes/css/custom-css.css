@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/notosans/regular/NotoSans-Regular-webfont.eot');
+    src: url('../fonts/notosans/regular/NotoSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/notosans/regular/NotoSans-Regular-webfont.woff') format('woff'),
+         url('../fonts/notosans/regular/NotoSans-Regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body{font-family:'Open Sans',"Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 12px;}
+.navbar-default {background-color: #c74800;border-color: #c74800;}
+.navbar-default .navbar-brand {color: #FFFFFF;}
+.navbar-default .navbar-nav>li>a {color: #FFFFFF;}
+.errorOptions{color:#FF0000; font-weight:bold;}
+.correctAnswer{color: #0000FF; font-weight:bold;}

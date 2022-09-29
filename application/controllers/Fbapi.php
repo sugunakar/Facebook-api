@@ -67,7 +67,7 @@ class Fbapi extends CI_Controller {
 		 $this->output->set_header('Pragma: no-cache');
 		 
 		 $helper = $this->fb->getRedirectLoginHelper();
-		 $permissions = array('email','pages_show_list','public_profile');//,
+		 $permissions = array('email','pages_show_list','public_profile','pages_read_engagement');//,
 		 $data["loginUrl"] = $this->helper->getLoginUrl(base_url('fbapi/fbcallback'), $permissions);
 		 
 		 $this->load->view('fbapi/index',$data);
@@ -133,26 +133,33 @@ class Fbapi extends CI_Controller {
 	public function getfbpageinfo($pageId)
 	{	
 		header('Content-Type: application/json');
-		$getpageInfo = $this->fb->get('/'.$pageId.'?access_token='.$this->session->userdata('fbAccessToken').'&fields=fan_count,name,founded,hours,overall_star_rating,rating_count,followers_count');
-		$getpageInfo	=	$getpageInfo->getDecodedBody();
-		if(isset($getpageInfo["id"]))
-		{
-			$insertData["fbUserId"] = $this->session->userdata('fbUserId');
-			$insertData["pageUId"] = $getpageInfo["id"];
-			$insertData["pageName"] = $getpageInfo["name"];
-			$insertData["reviewCount"] = isset($getpageInfo["rating_count"])?$getpageInfo["rating_count"]:0;
-			$this->fbModel->insertPageRow($this->config->item('MEMBER_PAGES_TABLE'),$insertData);
 		
-			$response["pageName"] = $getpageInfo["name"];
-			$response["followersCount"] = isset($getpageInfo["followers_count"])?$getpageInfo["followers_count"]:0;
-			$response["fanCount"] = isset($getpageInfo["fan_count"])?$getpageInfo["fan_count"]:0;
-			$response["ratingCount"] = isset($getpageInfo["rating_count"])?$getpageInfo["rating_count"]:0;
-			$response["statusCode"]=200;
-			$response["status"]="success";
-		}else{
-			$response["statusCode"]=404;
+		try{
+					$getpageInfo = $this->fb->get('/'.$pageId.'?access_token='.$this->session->userdata('fbAccessToken').'&fields=fan_count,name,founded,hours,overall_star_rating,rating_count,followers_count');
+				$getpageInfo	=	$getpageInfo->getDecodedBody();
+				if(isset($getpageInfo["id"]))
+				{
+					$insertData["fbUserId"] = $this->session->userdata('fbUserId');
+					$insertData["pageUId"] = $getpageInfo["id"];
+					$insertData["pageName"] = $getpageInfo["name"];
+					$insertData["reviewCount"] = isset($getpageInfo["rating_count"])?$getpageInfo["rating_count"]:0;
+					$this->fbModel->insertPageRow($this->config->item('MEMBER_PAGES_TABLE'),$insertData);
+				
+					$response["pageName"] = $getpageInfo["name"];
+					$response["followersCount"] = isset($getpageInfo["followers_count"])?$getpageInfo["followers_count"]:0;
+					$response["fanCount"] = isset($getpageInfo["fan_count"])?$getpageInfo["fan_count"]:0;
+					$response["ratingCount"] = isset($getpageInfo["rating_count"])?$getpageInfo["rating_count"]:0;
+					$response["statusCode"]=200;
+					$response["status"]="success";
+				}else{
+					$response["statusCode"]=404;
+					$response["status"]="error";
+					$response["message"]="No Data Found";
+				}
+		}catch(Facebook\Exceptions\FacebookSDKException $e) {
+		 	$response["statusCode"]=500;
 			$response["status"]="error";
-			$response["message"]="No Data Found";
+			$response["message"]="Facebook graph error. Please try again later.";
 		}
 		
 		$json_response=json_encode($response);
